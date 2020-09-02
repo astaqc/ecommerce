@@ -9,9 +9,15 @@ exports.create = (req, res) => {
     if (err) {
       return res.status(400).json({ error: "Image could not be uploaded" });
     }
+
     let product = new Product(fields);
 
     if (files.photo) {
+      if (files.photo.size > 1000000) {
+        return res
+          .status(400)
+          .json({ error: "Image size should not be more than 1mb" });
+      }
       product.photo.data = fs.readFileSync(files.photo.path);
       product.photo.contentType = files.photo.type;
     }
@@ -34,6 +40,32 @@ exports.getProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+exports.updateProduct = (req, res) => {
+  let form = formidable.IncomingForm();
+  form.keepExtensions = true;
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      return res.status(400).json({ error: "Image could not be uploaded" });
+    }
+    Product.findByIdAndUpdate(req.params.productId, fields, {
+      new: true,
+    })
+      .then((product) => {
+        if (files.photo) {
+          product.photo.data = fs.readFileSync(files.photo.path);
+          product.photo.contentType = files.photo.type;
+        }
+        product.save((err, data) => {
+          if (err) {
+            return res.status(400).json({ error: err.message });
+          }
+          return res.status(201).json(data);
+        });
+      })
+      .catch((err) => console.log("error updating product", err));
+  });
 };
 
 exports.deleteProduct = async (req, res) => {
