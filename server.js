@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const morgan = require("morgan");
 require("dotenv").config();
 
 // Connect to DB
@@ -13,6 +14,13 @@ mongoose
   })
   .then(() => console.log("mongoDB is connected"))
   .catch((err) => console.log(err));
+
+// Middlewares
+app.use(morgan("dev"));
+app.use(express.json());
+
+// Routes
+app.use("/api/auth", require("./routes/auth"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
