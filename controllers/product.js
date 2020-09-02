@@ -23,3 +23,28 @@ exports.create = (req, res) => {
     });
   });
 };
+
+exports.getProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      return res.status(400).json({ error: "Product not found" });
+    }
+    return res.json(product);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      return res.status(400).json({ error: "Product not found" });
+    }
+    await product.remove();
+    return res.json({ message: "Product successfully deleted" });
+  } catch (err) {
+    console.log(err);
+  }
+};
