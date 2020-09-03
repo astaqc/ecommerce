@@ -87,11 +87,29 @@ exports.getProducts = async (req, res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 5;
 
   try {
-    const products = await Product.find().select('-photo')
+    const products = await Product.find()
+      .select("-photo")
       .populate("category")
       .sort([[sortBy, order]])
       .limit(limit);
     res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getRelatedProducts = async (req, res) => {
+  let limit = req.query.limit ? parseInt(req.query.limit) : 5;
+
+  try {
+    let product = await Product.findById(req.params.productId);
+    let relatedProducts = await Product.find({
+      _id: { $ne: product },
+      category: product.category,
+    })
+      .limit(limit)
+      .populate("category", "_id name");
+    res.json(relatedProducts);
   } catch (err) {
     console.log(err);
   }
