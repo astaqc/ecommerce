@@ -80,3 +80,19 @@ exports.deleteProduct = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.getProducts = async (req, res) => {
+  let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+  let order = req.query.order ? req.query.order : "asc";
+  let limit = req.query.limit ? parseInt(req.query.limit) : 5;
+
+  try {
+    const products = await Product.find().select('-photo')
+      .populate("category")
+      .sort([[sortBy, order]])
+      .limit(limit);
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
