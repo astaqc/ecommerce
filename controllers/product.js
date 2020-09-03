@@ -114,3 +114,19 @@ exports.getRelatedProducts = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.productPhoto = async (req, res, next) => {
+  try {
+    let product = await Product.findById(req.params.productId);
+    if (!product) {
+      return res.status(400).json({ error: "Product not found" });
+    }
+    if (product.photo.data) {
+      res.set("Content-Type", product.photo.contentType);
+      return res.send(product.photo.data);
+    }
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+};
