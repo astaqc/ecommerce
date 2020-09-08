@@ -2,6 +2,7 @@ const Product = require("../models/product");
 const Category = require("../models/category");
 const fs = require("fs");
 const formidable = require("formidable");
+const { CartItem } = require("../models/order");
 
 exports.create = (req, res) => {
   let form = formidable.IncomingForm();
@@ -154,4 +155,21 @@ exports.productPhoto = async (req, res, next) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+exports.updateStock = (req, res, next) => {
+  let bulkOps = req.body.order.products.map((product) => {
+    return {
+      updateOne: {
+        filter: { _id: product._id },
+        update: { $inc: { quantity: -product.count, sold: +product.count } },
+      },
+    };
+  });
+  Product.bulkWrite(bulkOps, {}, (err, products) => {
+    if (err) {
+      return res.status(400).json({ error: err });
+    }
+    next();
+  });
 };
