@@ -54,3 +54,25 @@ exports.deleteUser = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+exports.addOrderToHistory = async (req, res, next) => {
+  let history = [];
+
+  req.body.order.products.forEach((product) => {
+    history.push({
+      _id: product._id,
+      title: product.title,
+      description: product.description,
+      category: product.category,
+      quantity: product.count,
+      transaction_id: req.body.order.transaction_id,
+      amount: req.body.order.amount,
+    });
+  });
+  await User.findByIdAndUpdate(
+    { _id: req.user._id },
+    { $push: { history } },
+    { new: true }
+  );
+  next();
+};

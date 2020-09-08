@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Category = require("../models/category");
 const fs = require("fs");
 const formidable = require("formidable");
 
@@ -32,7 +33,9 @@ exports.create = (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.productId);
+    const product = await Product.findById(req.params.productId).select(
+      "-photo"
+    );
     if (!product) {
       return res.status(400).json({ error: "Product not found" });
     }
@@ -88,6 +91,28 @@ exports.getProducts = async (req, res) => {
 
   try {
     const products = await Product.find()
+      .select("-photo")
+      .populate("category")
+      .sort([[sortBy, order]])
+      .limit(limit);
+    res.json(products);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.getProductsByCategory = async (req, res) => {
+  let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+  let order = req.query.order ? req.query.order : "asc";
+  let limit = req.query.limit ? parseInt(req.query.limit) : 5;
+  try {
+    const category = await Category.findOne({
+      title: req.params.categoryTitle,
+    });
+    if (!category) {
+      return res.status(400).json({ error: "Category not found" });
+    }
+    const products = await Product.find({ category })
       .select("-photo")
       .populate("category")
       .sort([[sortBy, order]])

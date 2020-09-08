@@ -5,11 +5,22 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
-  getCategories
+  getCategories,
 } = require("../controllers/category");
 const { requireLogin, isAdmin } = require("../middleware/auth");
+const {
+  validateCategory,
+  validationErrors,
+} = require("../validators/category");
 
-router.post("/create", requireLogin, isAdmin, create);
+router.post(
+  "/create",
+  requireLogin,
+  isAdmin,
+  validateCategory,
+  validationErrors,
+  create
+);
 router.get("/:categoryId", getCategory);
 router.put("/:categoryId/:userId", requireLogin, isAdmin, updateCategory);
 router.delete("/:categoryId/:userId", requireLogin, isAdmin, deleteCategory);
