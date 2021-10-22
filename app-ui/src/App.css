@@ -1,0 +1,17 @@
+.form {
+  width: 50%;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media only screen and (max-width: 992px) and (min-width: 576px) {
+  .btnContainer {
+    display: block;
+    text-align: center;
+  }
+}

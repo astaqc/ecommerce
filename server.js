@@ -29,5 +29,5 @@ app.use("/api/product", require("./routes/product"));
 app.use("/api/braintree", require("./routes/braintree"));
 app.use("/api/order", require("./routes/order"));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
